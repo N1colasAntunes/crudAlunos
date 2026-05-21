@@ -22,6 +22,25 @@ conexao.connect((erro)=>{
     }
 })
 
+app.post("/alunos", (req,res)=>{}){
+    const {nome, email, curso} = req.body
+    const sql = `INSERT INTO alunos(nome,email,curso) VALUES(?,?,?)`
+
+    conexao.query(
+        sql,
+        [nome, email, curso],
+        (erro, resultado)=>{
+            if(erro){
+                console.log(erro)
+                res.status(500).json(erro)
+            }
+            else{
+                res.json(resultado)
+            }
+        }
+    )
+}
+
 app.listen(3001,()=>{
     console.log("Servidor rodando")
 })
