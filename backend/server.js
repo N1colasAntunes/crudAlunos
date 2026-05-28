@@ -22,7 +22,7 @@ conexao.connect((erro)=>{
     }
 })
 
-app.post("/alunos", (req,res)=>{}){
+app.post("/alunos", (req,res)=>{
     const {nome, email, curso} = req.body
     const sql = `INSERT INTO alunos(nome,email,curso) VALUES(?,?,?)`
 
@@ -39,7 +39,61 @@ app.post("/alunos", (req,res)=>{}){
             }
         }
     )
-}
+})
+
+app.get("/alunos",(req, res)=>{
+    conexao.query(
+        "   SELECT * FROM alunos",
+        ()=>{
+            if(erro){
+                console.log('erro', erro)
+                res.status(500).json(erro)
+            }
+            else{
+                res.json(resultado)
+            }
+        }
+    )
+})
+
+app.put("/alunos/:id",()=>{
+    const {id} = req.params
+    const {nome, email, curso} = req.body
+    const sql= `UPDATE alunos SET nome=?, email=? WHERE id=?`
+
+    conexao.query(
+        sql,
+        [nome, email, curso, id],
+        (erro, resultado)=>{
+            if(erro){
+                console.log(erro)
+                res.status(500).json(erro)
+            }
+            else{
+                res.json(resultado)
+            }
+        }
+    )
+})
+
+app.delete("/alunos/:id", (req, res)=>{
+    const {id} = req.params
+    const sql = "DELETE FROM aluos WHERE id =?"
+
+    conexao.query(
+        sql,
+        [id],
+        (erro, resultados)=>{
+            if(erro){
+                console.log(erro)
+                res.status(500).json(erro)
+            }
+            else{
+                res.json(resultado)
+            }
+        }
+    )
+})
 
 app.listen(3001,()=>{
     console.log("Servidor rodando")

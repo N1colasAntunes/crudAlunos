@@ -10,9 +10,18 @@ function App(){
   const [editando, setEditando] = useState(false)
   const [idAtual, setIdAtual] = useState(null)
 
+  async function buscarAlunos(){
+    const resposta = await axios.get('https://supreme-space-waffle-r4rwg7wxvp4x256w-3001.app.github.dev/alunos')
+    setAlunos(resposta.data)
+  } 
+
+  useEffect(()=>{buscarAlunos()},[])
+
+
+
   async function salvar(e){
     e.preventDefault()
-    const aluno = [nome, email, curso]
+    const aluno = {nome, email, curso}
 
     if(editando){
       await axios.put(`https://supreme-space-waffle-r4rwg7wxvp4x256w-3001.app.github.dev/alunos/${idAtual}`,aluno)
@@ -21,10 +30,29 @@ function App(){
     } 
     else{
       await axios.post("https://supreme-space-waffle-r4rwg7wxvp4x256w-3001.app.github.dev/alunos",aluno)
-      //limparFormulario()
-      //buscarAlunos()
-
     }
+    
+    limparFormulario()
+    buscarAlunos()
+  }
+
+  async function excluir(id) {
+    await axios.delete(`https://supreme-space-waffle-r4rwg7wxvp4x256w-3001.app.github.dev/alunos/${id}`)
+    buscarAlunos()
+  }
+
+  function limparFormulario(){
+    setNome('')
+    setEmail('')
+    setCurso('')
+  }
+
+  function editar(aluno){
+    setNome(aluno.nome)
+    setEmail(aluno.email)
+    setCurso(aluno.curso)
+    setIdAtual(aluno.id)
+    setEditando(true)
   }
 
   return(
@@ -57,6 +85,20 @@ function App(){
           {editando ? "Atualizar" : "Cadastrar"}
         </button>
       </form>
+    <hr/>
+
+    {
+      alunos.map((aluno)=>(
+        <div key={aluno.id}>
+          <h3>{aluno.nome}</h3>
+          <p>{aluno.email}</p>
+          <p>{aluno.curso}</p>
+          <button onClick={()=> editar(aluno)}>Editar</button>
+          <button onClick={()=> editar(aluno.id)}>Excluir</button>
+          <hr/>
+        </div>
+      ))
+    }
     </div>
   )
 }
